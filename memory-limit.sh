@@ -4,14 +4,14 @@
 
 pid_file=/tmp/memory-limit.pid
 if [ -e "${pid_file}" ]; then
-  # 如果 PID 文件存在，则读取其中的 PID
+  # If the PID file exists, read the PID from it
   pid=$(cat "${pid_file}")
-  # 检查该 PID 是否对应一个正在运行的进程
+  # Check if the PID corresponds to a running process
   if ps -p "${pid}" > /dev/null; then
     echo "Error: Another instance of memory-limit.sh is already running with PID ${pid}"
     exit 1
   fi
-  # 如果 PID 文件存在，但对应的进程已经停止运行，删除 PID 文件
+  # If the PID file exists but the corresponding process has stopped running, delete the PID file
   rm "${pid_file}"
 fi
 echo $$ > "${pid_file}"

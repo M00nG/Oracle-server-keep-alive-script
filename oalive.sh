@@ -26,21 +26,21 @@ for ((int = 0; int < ${#REGEX[@]}; int++)); do
     fi
 done
 
-[[ $EUID -ne 0 ]] && echo -e "${RED}请使用 root 用户运行本脚本！${PLAIN}" && exit 1
+[[ $EUID -ne 0 ]] && echo -e "${RED}Please run this script with the root user!${PLAIN}" && exit 1
 
 checkver(){
   running_version=$(grep "ver=\"[0-9]\{4\}\.[0-9]\{2\}\.[0-9]\{2\}\.[0-9]\{2\}\.[0-9]\{2\}" "$0" | awk -F '"' '{print $2}')
-  curl -L https://gitlab.com/spiritysdx/Oracle-server-keep-alive-script/-/raw/main/oalive.sh -o oalive1.sh && chmod +x oalive1.sh
+  curl -L https://github.com/M00nG/Oracle-server-keep-alive-script/raw/main/oalive.sh -o oalive1.sh && chmod +x oalive1.sh
   downloaded_version=$(grep "ver=\"[0-9]\{4\}\.[0-9]\{2\}\.[0-9]\{2\}\.[0-9]\{2\}\.[0-9]\{2\}" oalive1.sh | awk -F '"' '{print $2}')
   if [ "$running_version" != "$downloaded_version" ]; then
-    _yellow "更新脚本从 $ver 到 $downloaded_version"
+    _yellow "Update script from $ver to $downloaded_version"
     mv oalive1.sh "$0"
     uninstall
-    _yellow "5秒后请重新设置占用，已自动卸载原有占用"
+    _yellow "Please reset the occupancy after 5 seconds, has automatically uninstalled the original occupancy"
     sleep 5
     bash oalive.sh
   else
-    _green "本脚本已是最新脚本无需更新"
+    _green "This script is already the latest script no need to update"
     rm oalive1.sh
   fi
 }
@@ -73,15 +73,14 @@ boinc() {
       exit 1
     fi
     systemctl enable docker
-    _green "CPU限制安装成功"
     _green "Boinc is installed as docker and using"
 }
 
 calculate() {
-    curl -L https://gitlab.com/spiritysdx/Oracle-server-keep-alive-script/-/raw/main/cpu-limit.sh -o cpu-limit.sh && chmod +x cpu-limit.sh
+    curl -L https://github.com/M00nG/Oracle-server-keep-alive-script/raw/main/cpu-limit.sh -o cpu-limit.sh && chmod +x cpu-limit.sh
     mv cpu-limit.sh /usr/local/bin/cpu-limit.sh 
     chmod +x /usr/local/bin/cpu-limit.sh
-    curl -L https://gitlab.com/spiritysdx/Oracle-server-keep-alive-script/-/raw/main/cpu-limit.service -o cpu-limit.service && chmod +x cpu-limit.service
+    curl -L https://github.com/M00nG/Oracle-server-keep-alive-script/raw/main/cpu-limit.service -o cpu-limit.service && chmod +x cpu-limit.service
     mv cpu-limit.service /etc/systemd/system/cpu-limit.service
     line_number=7
     total_cores=0
@@ -99,20 +98,18 @@ calculate() {
     systemctl daemon-reload
     systemctl enable cpu-limit.service
     systemctl start cpu-limit.service
-    _green "CPU限制安装成功 脚本路径: /usr/local/bin/cpu-limit.sh"
     _green "The CPU limit script has been installed at /usr/local/bin/cpu-limit.sh"
 }
 
 memory(){
-    curl -L https://gitlab.com/spiritysdx/Oracle-server-keep-alive-script/-/raw/main/memory-limit.sh -o memory-limit.sh && chmod +x memory-limit.sh
+    curl -L https://github.com/M00nG/Oracle-server-keep-alive-script/raw/main/memory-limit.sh -o memory-limit.sh && chmod +x memory-limit.sh
     mv memory-limit.sh /usr/local/bin/memory-limit.sh
     chmod +x /usr/local/bin/memory-limit.sh
-    curl -L https://gitlab.com/spiritysdx/Oracle-server-keep-alive-script/-/raw/main/memory-limit.service -o memory-limit.service && chmod +x memory-limit.service
+    curl -L https://github.com/M00nG/Oracle-server-keep-alive-script/raw/main/memory-limit.service -o memory-limit.service && chmod +x memory-limit.service
     mv memory-limit.service /etc/systemd/system/memory-limit.service
     systemctl daemon-reload
     systemctl enable memory-limit.service
     systemctl start memory-limit.service
-    _green "内存限制安装成功 脚本路径: /usr/local/bin/memory-limit.sh" 
     _green "The memory limit script has been installed at /usr/local/bin/memory-limit.sh"
 }
 
@@ -126,30 +123,29 @@ bandwidth(){
       checkupdate
       ${PACKAGE_INSTALL[int]} speedtest-cli
     fi
-    curl -L https://gitlab.com/spiritysdx/Oracle-server-keep-alive-script/-/raw/main/bandwidth_occupier.sh -o bandwidth_occupier.sh && chmod +x bandwidth_occupier.sh
+    curl -L https://github.com/M00nG/Oracle-server-keep-alive-script/raw/main/bandwidth_occupier.sh -o bandwidth_occupier.sh && chmod +x bandwidth_occupier.sh
     mv bandwidth_occupier.sh /usr/local/bin/bandwidth_occupier.sh
     chmod +x /usr/local/bin/bandwidth_occupier.sh
-    curl -L https://gitlab.com/spiritysdx/Oracle-server-keep-alive-script/-/raw/main/bandwidth_occupier.timer -o bandwidth_occupier.timer && chmod +x bandwidth_occupier.timer
+    curl -L https://github.com/M00nG/Oracle-server-keep-alive-script/raw/main/bandwidth_occupier.timer -o bandwidth_occupier.timer && chmod +x bandwidth_occupier.timer
     mv bandwidth_occupier.timer /etc/systemd/system/bandwidth_occupier.timer
-    curl -L https://gitlab.com/spiritysdx/Oracle-server-keep-alive-script/-/raw/main/bandwidth_occupier.service -o bandwidth_occupier.service && chmod +x bandwidth_occupier.service
+    curl -L https://github.com/M00nG/Oracle-server-keep-alive-script/raw/main/bandwidth_occupier.service -o bandwidth_occupier.service && chmod +x bandwidth_occupier.service
     mv bandwidth_occupier.service /etc/systemd/system/bandwidth_occupier.service
-    reading "需要自定义带宽占用的设置吗? (y/[n]) " answer
+    reading "Need to customize bandwidth usage settings? (y/[n]) " answer
     if [ "$answer" == "y" ]; then
         sed -i '/^bandwidth\|^rate/s/^/#/' /usr/local/bin/bandwidth_occupier.sh
-        reading "输入你需要的带宽大小(以mbps为单位，例如10mbps输入10): " rate_mbps
+        reading "Enter the bandwidth you need (in mbps, for example, enter 10 for 10mbps): " rate_mbps
 	rate=$(( rate_mbps * 1000000 ))
-        reading "输入你需要请求的时长(以分钟为单位，例如10分钟输入10m): " timeout
+        reading "Enter the duration you need to request (in minutes, for example, enter 10m for 10 minutes): " timeout
 	sed -i 's/^timeout/#timeout/' /usr/local/bin/bandwidth_occupier.sh
         sed -i '$ a\timeout '$timeout' wget $selected_url --limit-rate='$rate' -O /dev/null &' /usr/local/bin/bandwidth_occupier.sh
-	reading "输入你需要间隔的时长(以分钟为单位，例如45分钟输入45): " interval
+	reading "Enter the time interval you need (in minutes, for example, enter 45 for 45 minutes): " interval
         sed -i "s/^OnUnitActiveSec.*/OnUnitActiveSec=$interval/" /etc/systemd/system/bandwidth_occupier.timer
     else
-        _green "\n使用默认配置，45分钟间隔，请求10分钟，请求速率为最大速度的20%" 
+        _green "\nUse the default configuration, 45 minutes interval, request 10 minutes, the request rate is 20% of the maximum speed" 
     fi
     systemctl daemon-reload
     systemctl start bandwidth_occupier.timer
     systemctl enable bandwidth_occupier.timer
-    _green "带宽限制安装成功 脚本路径: /usr/local/bin/bandwidth_occupier.sh"
     _green "The bandwidth limit script has been installed at /usr/local/bin/bandwidth_occupier.sh"
 }
 
@@ -166,7 +162,7 @@ uninstall(){
 	      kill $(ps -efA | grep cpu-limit.sh | awk '{print $2}') &> /dev/null  
     fi
     rm -rf /tmp/cpu-limit.pid &> /dev/null  
-    _yellow "已卸载CPU占用 - The cpu limit script has been uninstalled successfully."
+    _yellow "Unloaded CPU usage - The cpu limit script has been uninstalled successfully."
     if [ -f "/etc/systemd/system/memory-limit.service" ]; then
         systemctl stop memory-limit.service
         systemctl disable memory-limit.service
@@ -175,7 +171,7 @@ uninstall(){
 	      rm /dev/shm/file
 	      kill $(ps -efA | grep memory-limit.sh | awk '{print $2}') &> /dev/null  
         rm -rf /tmp/memory-limit.pid &> /dev/null  
-        _yellow "已卸载内存占用 - The memory limit script has been uninstalled successfully."
+        _yellow "Unloaded memory usage - The memory limit script has been uninstalled successfully."
     fi
     if [ -f "/etc/systemd/system/bandwidth_occupier.service" ]; then
         systemctl stop bandwidth_occupier
@@ -187,14 +183,14 @@ uninstall(){
 	      rm /etc/systemd/system/bandwidth_occupier.timer
 	      kill $(ps -efA | grep bandwidth_occupier.sh | awk '{print $2}') &> /dev/null  
         rm -rf /tmp/bandwidth_occupier.pid &> /dev/null 
-        _yellow "已卸载带宽占用 - The bandwidth occupier and timer script has been uninstalled successfully."
+        _yellow "Unloaded bandwidth usage - The bandwidth occupier and timer script has been uninstalled successfully."
     fi
     systemctl daemon-reload
 }
 
 main() {
-    _green "当前脚本更新时间(请注意比对仓库说明)： $ver"
-    _green "仓库：https://github.com/spiritLHLS/Oracle-server-keep-alive-script"
+    _green "The current script update time (please pay attention to compare the warehouse instructions)： $ver"
+    _green "https://github.com/spiritLHLS/Oracle-server-keep-alive-script"
     checkupdate
     if ! command -v wget > /dev/null 2>&1; then
       echo "wget not found, installing..."
@@ -216,19 +212,19 @@ main() {
       _yellow "Installing nproc"
       ${PACKAGE_INSTALL[int]} coreutils
     fi
-    echo "选择你的选项:"
-    echo "1. 安装保活服务"
-    echo "2. 卸载保活服务"
-    echo "3. 一键更新脚本"
-    echo "4. 退出程序"
-    reading "你的选择：" option
+    echo "Select your options:"
+    echo "1. Installation Warranty Service"
+    echo "2. Offload Warranty Service"
+    echo "3. One Click Update Script"
+    echo "4. Exit Processes"
+    reading "Select Options：" option
     case $option in
         1)
-            echo "选择你需要占用CPU时使用的程序:"
-            echo "1. 本机DD模拟占用(20%~25%) [推荐]"
-            echo "2. BOINC-docker服务(20%)(https://github.com/BOINC/boinc) [不推荐]"
-	    echo "3. 不限制"
-            reading "你的选择：" cpu_option
+            echo "Select the program to use when you need to occupy the CPU:"
+            echo "1. Local DD simulation occupancy (20%~25%) [Recommended]"
+            echo "2. BOINC-docker service (20%) (https://github.com/BOINC/boinc) [not recommended]"
+	    echo "3. No restriction"
+            reading "Your choice：" cpu_option
             if [ $cpu_option == 2 ]; then
                 boinc
 	    elif [ $cpu_option == 3 ]; then
@@ -236,11 +232,11 @@ main() {
             else
                 calculate
             fi
-            reading "需要限制内存吗? ([y]/n): " memory_confirm
+            reading "Do you need to limit the memory? ([y]/n): " memory_confirm
             if [ "$memory_confirm" != "n" ]; then
                 memory
             fi
-            reading "需要限制带宽吗? ([y]/n): " bandwidth_confirm
+            reading "Do you need to limit the bandwidth? ([y]/n): " bandwidth_confirm
             if [ "$bandwidth_confirm" != "n" ]; then
                 bandwidth
             fi
@@ -253,7 +249,7 @@ main() {
             checkver
             ;;
         *)
-            echo "无效选项，退出程序"
+            echo "Invalid option, exit the program"
             exit 1
             ;;
     esac
